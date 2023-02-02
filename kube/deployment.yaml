@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simpleapp-webapp
+  labels:
+    app: simpleapp-webapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: simpleapp-webapp
+  template:
+    metadata:      
+      labels:
+        app: simpleapp-webapp
+    spec:
+      containers:
+      - name: simpleapp-webapp
+        image: shivalikirdat/cloudethix_initcontainer_shivali:v1
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: simpleapp-webapp-volume
+      initContainers:
+      - name: install
+        image: busybox:1.28
+        command:
+        - wget
+        - "-O"
+        - "/work-dir/index.html"
+        - http://info.cern.ch
+        volumeMounts:
+        - name: simpleapp-webapp-volume
+          mountPath: "/work-dir"
+      volumes:
+      - name: simpleapp-webapp-volume
+        emptyDir: {}
+
